@@ -1,9 +1,4 @@
-module.exports = function (app, swig) {
-
-    app.post("/cancion", function (req, res) {
-        res.send("Canción agregada:" + req.body.nombre + "<br>" + " genero :"
-            + req.body.genero + "<br>" + " precio: " + req.body.precio);
-    });
+module.exports = function (app, swig, mongo) {
 
     app.get("/canciones", function (req, res) {
         var canciones = [{"nombre": "Blank space", "precio": "1.2"}, {
@@ -20,6 +15,30 @@ module.exports = function (app, swig) {
         var respuesta = swig.renderFile('views/bagregar.html', {});
         res.send(respuesta);
     })
+
+    app.post("/cancion", function (req, res) {
+        var cancion = {
+            nombre : req.body.nombre,
+            genero : req.body.genero,
+            precio : req.body.precio
+        }
+        mongo.MongoClient.connect(app.get('db'), function(err, db) {
+            if (err) {
+                res.send("Error de conexión: " + err);
+            } else {
+                var collection = db.collection('canciones');
+                collection.insert(cancion, function(err, result) {
+                    if (err) {
+                        res.send("Error al insertar " + err);
+                    } else {
+                        res.send("Agregada id: "+ result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
+    });
+
 
     app.get('/suma', function (req, res) {
         var respuesta = parseInt(req.query.num1) + parseInt(req.query.num2);
