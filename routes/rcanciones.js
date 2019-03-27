@@ -120,7 +120,8 @@ module.exports = function (app, swig, gestorBD) {
         var cancion = {
             nombre: req.body.nombre,
             genero: req.body.genero,
-            precio: req.body.precio
+            precio: req.body.precio,
+            autor: req.session.usuario
         }
         gestorBD.modificarCancion(criterio, cancion, function (result) {
             if (result == null) {
