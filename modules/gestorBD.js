@@ -73,6 +73,23 @@ module.exports = {
             }
         });
     },
+    eliminarCancion : function(criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                var collection = db.collection('canciones');
+                collection.remove(criterio, function(err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },
     modificarCancion : function(criterio, cancion, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
             if (err) {

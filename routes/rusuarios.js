@@ -9,14 +9,23 @@ module.exports = function (app, swig, gestorBD) {
         var seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
         var usuario = {
-            email : req.body.email,
-            password : seguro
+            email: req.body.email,
+            password: seguro
         }
-        gestorBD.insertarUsuario(usuario, function(id) {
-            if (id == null){
-                res.send("Error al insertar ");
+        var criterio = {
+            email : req.body.email
+        }
+        gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+            if (usuarios.length != 0) {
+                res.send("Ya existe el usuario");
             } else {
-                res.send('Usuario Insertado ' + id);
+                gestorBD.insertarUsuario(usuario, function(id) {
+                    if (id == null){
+                        res.send("Error al insertar ");
+                    } else {
+                        res.send('Usuario Insertado ' + id);
+                    }
+                });
             }
         });
     });
