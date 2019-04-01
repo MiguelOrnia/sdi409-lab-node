@@ -46,13 +46,26 @@ routerUsuarioAutor.use(function(req, res, next) {
             if(canciones[0].autor == req.session.usuario ){
                 next();
             } else {
-                res.redirect("/tienda");
+                var criterio = {
+                    usuario: req.session.usuario,
+                    cancionId: mongo.ObjectID(idCancion)
+                };
+
+                gestorBD.obtenerCompras(criterio, function (compras) {
+                    if (compras != null && compras.length > 0) {
+                        next();
+                    } else {
+                        res.redirect("/tienda");
+                    }
+                });
             }
         })
 });
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
+app.use("/cancion/comprar",routerUsuarioSession);
+app.use("/compras",routerUsuarioSession);
 
 //routerAudios
 var routerAudios = express.Router();
@@ -82,6 +95,7 @@ app.set('db','mongodb://admin:75218221Ma+@tiendamusica-shard-00-00-dwuxn.mongodb
 app.set('port', 8081);
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
+
 
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD); //(app, param1, param2, etc.)
