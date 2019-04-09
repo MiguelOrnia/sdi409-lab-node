@@ -63,7 +63,7 @@ module.exports = function(app, gestorBD) {
             } else {
                 res.status(201);
                 res.json({
-                    mensaje : "canción insertarda",
+                    mensaje : "canción insertada",
                     _id : id
                 })
             }
